@@ -8,13 +8,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # File paths
 RECENT_FILES_PATH = BASE_DIR / "recent_files.json"
-LOG_FILE = BASE_DIR / "textractor.log"
+LOG_FILE = BASE_DIR / "kevstextractor.log"
 BANNER_PATH = BASE_DIR / "resources" / "images" / "textractor_banner.png"
 
 # Application settings
-APP_NAME = "Textractor"
+APP_NAME = "Kev's Textractor"
 VERSION = "1.0"
-COMPANY_NAME = "Your Company Name"
+COMPANY_NAME = "Kevin McGeagh"
 
 # UI settings
 WINDOW_WIDTH = 1200
@@ -32,15 +32,15 @@ MAX_TEXTURE_SIZE = 2048  # Maximum size of extracted texture
 
 # Launch popup settings
 SHOW_LAUNCH_POPUP = True
-LICENSE_WARNING = "This software is licensed under the MIT License. See the LICENSE file for more information."
+LICENSE_WARNING = "This software is licensed under the Apache License 2.0. See the LICENSE file for more information."
 
 # About text
 ABOUT_TEXT = f"""
 {APP_NAME} v{VERSION}
 © 2024 {COMPANY_NAME}
 
-This software is licensed under the MIT License.
-For more information, visit: https://opensource.org/licenses/MIT
+This software is licensed under the Apache License 2.0 License.
+For more information, visit: https://www.apache.org/licenses/LICENSE-2.0
 """
 
 # Recent files settings
