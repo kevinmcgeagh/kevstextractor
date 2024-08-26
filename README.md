@@ -15,7 +15,7 @@ Kev's Textractor is a user-friendly application designed to extract textures fro
 
 ## Installation
 
-1. Ensure you have Python 3.7 or later installed on your system.
+1. Ensure you have Python 3.8 or later installed on your system.
 2. Clone this repository:
    ```
    git clone https://github.com/kevinmcgeagh/kevstextractor.git
