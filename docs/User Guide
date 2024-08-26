@@ -1,0 +1,142 @@
+Textractor User Guide
+
+Table of Contents
+1. Introduction
+2. Installation
+3. Getting Started
+4. Main Interface
+5. Loading an Image
+6. Selecting a Texture
+7. Adjusting Aspect Ratio
+8. Transforming the Texture
+9. Extracting and Saving the Texture
+10. Undo and Redo
+11. Recent Files
+12. Keyboard Shortcuts
+13. Troubleshooting
+14. Tips and Best Practices
+
+1. Introduction
+
+Textractor is a powerful and user-friendly application designed to extract textures from images. Whether you're a game developer, graphic designer, or digital artist, Textractor provides an intuitive interface for selecting, adjusting, and extracting textures from any image.
+
+2. Installation
+
+To install Textractor:
+
+1. Ensure you have Python 3.8 or later installed on your system.
+2. Download the Textractor package.
+3. Unzip the package to your desired location.
+4. Open a terminal or command prompt and navigate to the Textractor directory.
+5. Run `pip install -r requirements.txt` to install the necessary dependencies.
+6. Launch the application by running `python run.py`.
+
+3. Getting Started
+
+Upon launching Textractor, you'll be greeted with the main application window. Here's a quick overview of what you'll see:
+
+- A large canvas on the left for displaying and interacting with your image.
+- A preview pane on the right lets you view your extracted texture.
+- Control buttons and options below the preview pane.
+
+4. Main Interface
+
+The main interface consists of several key areas:
+
+- Menu Bar: Contains File and Help menus.
+- Main Canvas: Displays the loaded image and allows for texture selection.
+- Preview Pane: Shows the extracted texture with applied transformations.
+- Control Panel: Contains buttons and options for various operations.
+- Status Bar: Displays current application status and helpful messages.
+
+5. Loading an Image
+
+To load an image:
+
+1. Click the "Load Image" button or use the keyboard shortcut Ctrl+O.
+2. In the file dialog, navigate to and select your desired image.
+3. Click "Open" to load the image.
+
+The image will appear in the main canvas, ready for texture extraction.
+
+6. Selecting a Texture
+
+To select a texture from the loaded image:
+
+1. Click on four points on the image to define your texture area.
+2. The points should be selected in clockwise order, starting from the top-left corner of your desired texture.
+3. A blue outline will appear, connecting your selected points to form a quadrilateral.
+
+You can adjust the points by clicking and dragging them to refine your selection.
+
+7. Adjusting Aspect Ratio
+
+Textractor offers three aspect ratio modes:
+
+- Estimated: Automatically calculates based on your selection.
+- Square: Forces a 1:1 aspect ratio.
+- Custom: Allows you to enter a specific aspect ratio. (May cause some issues with realtime updates to preview of texture)
+
+To change the aspect ratio:
+
+1. Select your desired mode from the "Aspect Ratio" dropdown.
+2. Select "Custom" for custom ratios and enter the desired value (e.g., 16:9 would be 1.78).
+
+8. Transforming the Texture
+
+You can apply the following transformations to your extracted texture:
+
+- Flip Vertically: Check the "Flip Vertically" box to flip the texture upside down.
+- Flop Horizontally: Check the "Flop Horizontally" box to mirror the texture left to right.
+- Rotate 90° Clockwise: Check the "Rotate 90° Clockwise" box to rotate the texture.
+
+These transformations are applied in real-time and visible in the preview pane.
+
+9. Extracting and Saving the Texture
+
+Once you're satisfied with your selection and transformations:
+
+1. The texture will be automatically extracted and displayed in the preview pane.
+2. To save the texture, click the "Save Texture" button or use the keyboard shortcut Ctrl+S.
+3. Choose a location, enter a filename, and select your desired file format (PNG, JPEG, TIFF, or BMP).
+4. Click "Save" to save your extracted texture.
+
+10. Undo and Redo
+
+Textractor supports undo and redo operations:
+
+- To undo an action, use the keyboard shortcut Ctrl+Z.
+- To redo an action, use the keyboard shortcut Ctrl+Y.
+
+11. Recent Files
+
+Textractor keeps track of your recently opened files:
+
+1. Click on "File" in the menu bar.
+2. Hover over "Open Recent" to see a list of recently opened files.
+3. Click on any file in the list to quickly open it.
+
+12. Keyboard Shortcuts
+
+- Ctrl+O: Open an image
+- Ctrl+S: Save the extracted texture
+- Ctrl+Z: Undo
+- Ctrl+Y: Redo
+
+13. Troubleshooting
+
+If you encounter any issues:
+
+- Ensure all dependencies are correctly installed.
+- Check the application logs for any error messages.
+- Try restarting the application.
+
+14. Tips and Best Practices
+
+- For best results, use high-resolution source images.
+- When selecting points, try to align them with visible edges or corners in the image for accurate perspective correction.
+- Experiment with different aspect ratios to find the best fit for your texture needs.
+- Always preview your texture before saving to ensure it meets your requirements.
+
+Thank you for choosing Textractor! We hope this guide helps you make the most of our application.
+

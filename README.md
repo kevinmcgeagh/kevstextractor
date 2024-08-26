@@ -1,4 +1,4 @@
- # Textractor
+# Textractor
 
 Kev's Textractor is a powerful and user-friendly application designed to extract textures from images. Whether you're a game developer, graphic designer, or digital artist, Textractor provides an intuitive interface for selecting, adjusting, and extracting textures from any image.
 
@@ -49,7 +49,6 @@ For more detailed instructions, please refer to the [User Guide](docs/user_guide
 - NumPy
 - Pillow
 - tkinter (usually comes with Python)
-- tkhtmlview
 
 For a complete list of dependencies, see `requirements.txt`.
 
@@ -57,11 +56,11 @@ For a complete list of dependencies, see `requirements.txt`.
 
 Distributed under the Apache License 2.0. See `LICENSE` file for more information.
 
-Project Link: [[https://github.com/yourusername/textractor](https://github.com/yourusername/textractor)](https://github.com/kevinmcgeagh/kevstextractor)
+Project Link: [https://github.com/yourusername/textractor](https://github.com/yourusername/textractor)
 
 ## Acknowledgments
 
 - [OpenCV](https://opencv.org/)
 - [NumPy](https://numpy.org/)
 - [Pillow](https://python-pillow.org/)
-- [tkhtmlview](https://pypi.org/project/tkhtmlview/)
+- [All other acknowledgments]

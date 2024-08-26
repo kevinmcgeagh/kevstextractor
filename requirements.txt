@@ -1,0 +1,24 @@
+# requirements.txt for Textractor
+
+# Base Python version requirement
+# Python 3.8 or higher required
+
+# Image processing
+opencv-python~=4.10.0.84
+Pillow~=10.4.0
+
+# Scientific computing
+numpy~=1.24.4
+
+# GUI
+# Tkinter usually comes with Python, no need to specify version
+tkhtmlview~=0.3.1
+
+# Other utilities
+# Add any additional utility libraries here
+
+# Development dependencies (optional, for testing and development)
+# Use requirements-dev.txt for development dependencies
+# pytest>=6.2.5,<7.0.0
+# flake8>=4.0.0,<5.0.0
+# black>=21.12b0,<22.0.0
