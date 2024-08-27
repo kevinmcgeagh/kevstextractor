@@ -5,7 +5,8 @@ from tkinter import ttk, messagebox, filedialog
 from tkhtmlview import HTMLLabel
 from src.config.settings import ABOUT_TEXT, UI_TEXTS, SUPPORTED_IMAGE_TYPES, WINDOW_WIDTH, WINDOW_HEIGHT, \
     MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT
-
+from src.config.settings import LICENSE_WARNING, BANNER_PATH
+from PIL import Image, ImageTk
 
 class UIManager:
     def __init__(self, master: tk.Tk, controller):
@@ -15,6 +16,7 @@ class UIManager:
         self.setup_ui()
         self.create_menu()
         self.create_status_bar()
+        self.show_launch_popup()  # Add this line to show the popup on startup
 
     def setup_ui(self):
         self.master.title(UI_TEXTS["app_title"])
@@ -89,6 +91,18 @@ class UIManager:
         self.estimated_aspect_label = ttk.Label(self.control_frame, text=UI_TEXTS["estimated_aspect_label"].format(1.0))
         self.estimated_aspect_label.pack(fill=tk.X, pady=(5, 0))
 
+        # Add resolution option
+        resolution_frame = ttk.Frame(self.control_frame)
+        resolution_frame.pack(fill=tk.X, pady=(5, 0))
+        ttk.Label(resolution_frame, text="Output Resolution:").pack(side=tk.LEFT)
+        self.resolution_var = tk.StringVar(value="Original")
+        resolution_options = ["Original", "1024x1024", "2048x2048", "4096x4096", "Custom"]
+        self.resolution_menu = ttk.OptionMenu(resolution_frame, self.resolution_var, "Original", *resolution_options,
+                                              command=self.update_resolution)
+        self.resolution_menu.pack(side=tk.LEFT, padx=(5, 10))
+        self.custom_resolution_entry = ttk.Entry(resolution_frame, width=10, state='disabled')
+        self.custom_resolution_entry.pack(side=tk.LEFT)
+
         # Image transformation options
         self.flip_var = tk.BooleanVar()
         self.flip_check = ttk.Checkbutton(self.control_frame, text=UI_TEXTS["flip_checkbox"], variable=self.flip_var)
@@ -102,6 +116,45 @@ class UIManager:
         self.rotate_check = ttk.Checkbutton(self.control_frame, text=UI_TEXTS["rotate_checkbox"],
                                             variable=self.rotate_var)
         self.rotate_check.pack(fill=tk.X, pady=2)
+
+    def show_launch_popup(self):
+        popup = tk.Toplevel(self.master)
+        popup.title("Welcome to Textractor")
+        popup.geometry("400x300")
+        popup.resizable(False, False)
+
+        # Try to load the banner image
+        try:
+            banner_image = Image.open(BANNER_PATH)
+            banner_photo = ImageTk.PhotoImage(banner_image)
+            banner_label = tk.Label(popup, image=banner_photo)
+            banner_label.image = banner_photo  # Keep a reference
+            banner_label.pack(pady=10)
+        except FileNotFoundError:
+            # Fallback to text if image is not found
+            banner_text = tk.Label(popup, text="Welcome to Textractor", font=("Helvetica", 16, "bold"))
+            banner_text.pack(pady=20)
+
+        # License warning
+        warning_label = tk.Label(popup, text=LICENSE_WARNING, wraplength=380, justify="center")
+        warning_label.pack(pady=10)
+
+        # OK button to close the popup
+        ok_button = tk.Button(popup, text="OK", command=popup.destroy)
+        ok_button.pack(pady=10)
+
+        # Center the popup on the screen
+        popup.update_idletasks()
+        width = popup.winfo_width()
+        height = popup.winfo_height()
+        x = (popup.winfo_screenwidth() // 2) - (width // 2)
+        y = (popup.winfo_screenheight() // 2) - (height // 2)
+        popup.geometry('{}x{}+{}+{}'.format(width, height, x, y))
+
+        # Make the popup modal
+        popup.transient(self.master)
+        popup.grab_set()
+        self.master.wait_window(popup)
 
     def create_menu(self):
         menubar = tk.Menu(self.master)
@@ -193,9 +246,16 @@ class UIManager:
         else:
             self.recent_files_menu.add_command(label="No recent files", state=tk.DISABLED)
 
+    def update_resolution(self, value):
+        if value == "Custom":
+            self.custom_resolution_entry.config(state='normal')
+        else:
+            self.custom_resolution_entry.config(state='disabled')
+        self.controller.update_output_resolution(value)
+
     def show_user_guide(self):
         guide_window = tk.Toplevel(self.master)
-        guide_window.title("Kev's Textractor User Guide")
+        guide_window.title("Textractor User Guide")
         guide_window.geometry("800x600")
 
         # Create a frame with scrollbar
@@ -226,7 +286,7 @@ class UIManager:
         self.master.wait_window(guide_window)
 
     def show_about(self):
-        messagebox.showinfo("About Kev's Textractor", ABOUT_TEXT)
+        messagebox.showinfo("About Textractor", ABOUT_TEXT)
 
     def update_status(self, message):
         self.status_bar.config(text=message)

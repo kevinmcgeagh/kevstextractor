@@ -3,7 +3,7 @@
 import cv2
 import numpy as np
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog
 from PIL import Image, ImageTk, ImageOps
 import threading
 import queue
@@ -15,14 +15,12 @@ from src.ui.ui_manager import UIManager
 from src.core.image_processor import ImageProcessor
 from src.utils.file_utils import load_recent_files, save_recent_files
 from src.utils.exceptions import ImageLoadError, TextureExtractionError
-from src.config.settings import LICENSE_WARNING, BANNER_PATH
 
 logger = logging.getLogger(__name__)
 
 
 class Textractor:
     def __init__(self, master: tk.Tk):
-        self.master = master
         self.recent_files: List[str] = load_recent_files()
 
         self.image_processor = ImageProcessor()
@@ -42,10 +40,11 @@ class Textractor:
         self.queue: queue.Queue = queue.Queue()
         self.thread: Optional[threading.Thread] = None
 
-        # Zoom and pan variables
         self.pan_start_x = 0
         self.pan_start_y = 0
         self.zoom_factor = 1.0
+
+        self.output_resolution: Optional[Tuple[int, int]] = None
 
         self.setup_ui_commands()
         self.setup_keyboard_shortcuts()
@@ -57,48 +56,6 @@ class Textractor:
             self.on_resize,
             self.on_closing
         )
-
-        # Show the launch pop-up
-        self.show_launch_popup()
-
-    def show_launch_popup(self):
-        popup = tk.Toplevel(self.master)
-        popup.title("Welcome to Textractor")
-        popup.geometry("400x300")
-        popup.resizable(False, False)
-
-        # Try to load the banner image
-        try:
-            banner_image = Image.open(BANNER_PATH)
-            banner_photo = ImageTk.PhotoImage(banner_image)
-            banner_label = tk.Label(popup, image=banner_photo)
-            banner_label.image = banner_photo  # Keep a reference
-            banner_label.pack(pady=10)
-        except FileNotFoundError:
-            # Fallback to text if image is not found
-            banner_text = tk.Label(popup, text="Welcome to Textractor", font=("Helvetica", 16, "bold"))
-            banner_text.pack(pady=20)
-
-        # License warning
-        warning_label = tk.Label(popup, text=LICENSE_WARNING, wraplength=380, justify="center")
-        warning_label.pack(pady=10)
-
-        # OK button to close the popup
-        ok_button = tk.Button(popup, text="OK", command=popup.destroy)
-        ok_button.pack(pady=10)
-
-        # Center the popup on the screen
-        popup.update_idletasks()
-        width = popup.winfo_width()
-        height = popup.winfo_height()
-        x = (popup.winfo_screenwidth() // 2) - (width // 2)
-        y = (popup.winfo_screenheight() // 2) - (height // 2)
-        popup.geometry('{}x{}+{}+{}'.format(width, height, x, y))
-
-        # Make the popup modal
-        popup.transient(self.master)
-        popup.grab_set()
-        self.master.wait_window(popup)
 
     def setup_ui_commands(self) -> None:
         self.ui.load_button.config(command=self.load_image)
@@ -169,7 +126,6 @@ class Textractor:
         if self.image is None:
             return
 
-        # Convert event coordinates to canvas coordinates
         x = self.ui.canvas.canvasx(event.x)
         y = self.ui.canvas.canvasy(event.y)
 
@@ -196,7 +152,6 @@ class Textractor:
 
     def on_drag(self, event) -> None:
         if self.dragging_index is not None:
-            # Convert event coordinates to canvas coordinates
             x = self.ui.canvas.canvasx(event.x)
             y = self.ui.canvas.canvasy(event.y)
 
@@ -212,7 +167,6 @@ class Textractor:
     def on_move(self, event) -> None:
         self.ui.canvas.delete("temp_line")
         if len(self.points) > 0 and len(self.points) < 4:
-            # Convert event coordinates to canvas coordinates
             x = self.ui.canvas.canvasx(event.x)
             y = self.ui.canvas.canvasy(event.y)
             self.ui.canvas.create_line(self.points[-1], (x, y), fill="yellow", width=2, tags="temp_line")
@@ -330,23 +284,50 @@ class Textractor:
     def _extract_texture_thread(self) -> None:
         try:
             src_pts = np.array(self.original_points, dtype=np.float32)
-            preview_width = self.ui.preview_canvas.winfo_width()
-            preview_height = self.ui.preview_canvas.winfo_height()
 
-            # Adjust dimensions based on aspect ratio
-            if self.aspect_ratio > 1:
-                w = preview_width
-                h = int(w / self.aspect_ratio)
-            else:
-                h = preview_height
-                w = int(h * self.aspect_ratio)
+            max_dim = max(self.image.shape[0], self.image.shape[1])
 
-            warped = self.image_processor.extract_texture(self.image, src_pts, w, h)
+            output_size = self._calculate_output_size(src_pts, max_dim)
+
+            warped = self.image_processor.extract_texture(self.image, src_pts, output_size[0], output_size[1])
             display_warped = cv2.cvtColor(warped, cv2.COLOR_BGR2RGB)
-            self.queue.put((warped, display_warped))
+
+            preview_warped = self._scale_for_preview(display_warped)
+
+            self.queue.put((warped, preview_warped))
         except Exception as e:
             logger.error(f"Error in texture extraction: {str(e)}")
             self.queue.put(None)
+
+    def _calculate_output_size(self, points: np.ndarray, max_dim: int) -> Tuple[int, int]:
+        if self.output_resolution:
+            return self.output_resolution
+
+        width = max(
+            np.linalg.norm(points[0] - points[1]),
+            np.linalg.norm(points[2] - points[3])
+        )
+        height = max(
+            np.linalg.norm(points[1] - points[2]),
+            np.linalg.norm(points[3] - points[0])
+        )
+
+        if self.aspect_ratio > 1:
+            width = height * self.aspect_ratio
+        else:
+            height = width / self.aspect_ratio
+
+        scale = max_dim / max(width, height)
+        return (int(width * scale), int(height * scale))
+
+    def _scale_for_preview(self, image: np.ndarray) -> np.ndarray:
+        preview_max_dim = 500  # Maximum dimension for preview
+        h, w = image.shape[:2]
+        if max(h, w) > preview_max_dim:
+            scale = preview_max_dim / max(h, w)
+            new_size = (int(w * scale), int(h * scale))
+            return cv2.resize(image, new_size, interpolation=cv2.INTER_AREA)
+        return image
 
     def check_thread(self) -> None:
         if self.thread.is_alive():
@@ -355,7 +336,7 @@ class Textractor:
             try:
                 result = self.queue.get_nowait()
                 if result is not None:
-                    self.warped, self.display_warped = result
+                    self.warped, self.preview_warped = result
                     self.update_preview()
                     self.ui.update_status("Texture extracted successfully")
                 else:
@@ -368,8 +349,8 @@ class Textractor:
                 self.ui.update_status("Failed to extract texture")
 
     def update_preview(self) -> None:
-        if hasattr(self, 'display_warped'):
-            preview = Image.fromarray(self.display_warped)
+        if hasattr(self, 'preview_warped'):
+            preview = Image.fromarray(self.preview_warped)
             if self.ui.flip_var.get():
                 preview = ImageOps.flip(preview)
             if self.ui.flop_var.get():
@@ -479,10 +460,28 @@ class Textractor:
         save_recent_files(self.recent_files)
         self.ui.update_recent_files_menu()
 
+    def update_output_resolution(self, value: str) -> None:
+        if value == "Original":
+            self.output_resolution = None
+        elif value == "Custom":
+            # You'll need to add logic to parse the custom entry
+            custom_value = self.ui.custom_resolution_entry.get()
+            try:
+                width, height = map(int, custom_value.split('x'))
+                self.output_resolution = (width, height)
+            except ValueError:
+                self.ui.show_error("Invalid Resolution", "Please enter a valid resolution (e.g., 1024x1024)")
+                return
+        else:
+            width, height = map(int, value.split('x'))
+            self.output_resolution = (width, height)
+        self.extract_texture()  # Re-extract with new resolution
+
     def run(self) -> None:
         self.ui.master.mainloop()
 
 
+# This block is executed only if the script is run directly
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     root = tk.Tk()
