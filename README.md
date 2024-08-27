@@ -40,7 +40,7 @@ Kev's Textractor is a user-friendly application designed to extract textures fro
 4. Adjust aspect ratio and apply transformations as needed.
 5. Click "Save Texture" or use Ctrl+S to save the extracted texture.
 
-For more detailed instructions, please refer to the [User Guide](docs/user_guide.md).
+For more detailed instructions, please refer to the [User Guide](https://github.com/kevinmcgeagh/kevstextractor/blob/main/docs/User%20Guide).
 
 ## Dependencies
 
