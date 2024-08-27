@@ -56,11 +56,11 @@ For a complete list of dependencies, see `requirements.txt`.
 
 Distributed under the Apache License 2.0. See `LICENSE` file for more information.
 
-Project Link:[[https://github.com/yourusername/textractor](https://github.com/kevinmcgeagh/kevstextractor)
+Project Link:[https://github.com/kevinmcgeagh/kevstextractor](https://github.com/kevinmcgeagh/kevstextractor)
 
 ## Acknowledgments
 
 - [OpenCV](https://opencv.org/)
 - [NumPy](https://numpy.org/)
 - [Pillow](https://python-pillow.org/)
-- [All other acknowledgments]
+- [tkhtmlview](https://pypi.org/project/tkhtmlview/)
