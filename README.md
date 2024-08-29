@@ -2,7 +2,7 @@
 
 Kev's Textractor is a user-friendly application designed to extract textures from images. Whether you're a game developer, graphic designer, or digital artist, Textractor provides an intuitive interface for selecting, adjusting, and extracting textures from any image.
 
-![Textractor Screenshot](path/to/screenshot.png)
+![GUI_preview](https://github.com/user-attachments/assets/e6ce7778-c88e-4cc8-98ea-82ce9dff0444)
 
 ## Features
 
